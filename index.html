@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>じゃんけん</title>
+  <link href="https://fonts.googleapis.com/css?family=Noto+Sans+JP" rel="stylesheet" />
+  <link rel="stylesheet" href="css/janken.css">
+</head>
+
+<body>
+  <main>
+
+    <!-- <section>
+      <h1>バトル１</h1>
+    </section> -->
+
+    <section>
+      <button id="level1_start">Lv1</button>
+    </section>
+
+    <section class="enemy">
+      <h2 id="enemyName">敵</h2>
+      <img id="enemyImage" src="./images/syuutyuu.png" alt="">
+    </section>
+
+    <div class="hp">
+      <div>HP
+        <meter id="currentEnemyHp" min="0" max="10" value='enemyStatus_1["hp"]'></meter>
+      </div>
+
+      <section>
+        <p id="jikkyou">実況</p>
+      </section>
+
+      <!-- <section class="player"> -->
+      <!-- <h2 id="playerName">自分</h2> -->
+      <!-- </section> -->
+
+      <div class="hp">
+        <div>HP
+          <meter id="currentPlayerHp" min="0" max="20" value='playerStatus_1["hp"]'></meter>
+        </div>
+        <div>MP
+          <meter id="currentPlayerMp" min="0" max="5" value='playerStatus_1["mp"]'></meter>
+        </div>
+      </div>
+
+      <section>
+        <div>
+          <p>負けた数</p>
+          <span id="lose">0</span>回
+        </div>
+      </section>
+
+
+      <section>
+        <div>
+          <button id="jisouryoku">自走力</button>
+          <button id="p2p">P2P</button>
+          <button>チューター</button>
+        </div>
+        <div>回復
+          <button id="detox">
+            <p>デジタル<br>デトックス</p>
+          </button>
+        </div>
+      </section>
+
+  </main>
+
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
+  <script>
+
+    // プレイヤー情報
+    const playerStatus_1 = {
+      name: "プログラマーのたまご",
+      level: 1,
+      // hp: 20,
+      minHp: 0,
+      maxHp: 20,
+      mp: 5,
+      jisouryoku: 2,
+      p2p: 3,
+      detox: 3,
+    };
+
+    let playerStatus_1_hp = 20;
+
+
+    const playerStatus_2 = {
+      name: "ひよっこプログラマー",
+      level: 2,
+      hp: 30,
+      jisouryoku: 3,
+      p2p: 4,
+      tutor: 5,
+    };
+
+    const playerStatus_3 = {
+      name: "半人前プログラマー",
+      level: 3,
+      hp: 50,
+      jisouryoku: 4,
+      p2p: 5,
+      tutor: 6,
+      teacher: 10,
+    };
+
+    // 敵の情報
+    const enemyStatus_1 = {
+      name: "ねむけ",
+      // hp: 10,
+      minHp: 0,
+      attack: 1,
+    };
+
+    let enemyStatus_1_hp = 10
+
+    $("selecter").attr("name", "value");
+
+    const enemyStatus_2 = {
+      name: "ゆうわく",
+      hp: 20,
+      attack: 2,
+    };
+
+    const enemyStatus_3 = {
+      name: "謎エラー",
+      hp: 50,
+      attack: 3,
+    };
+
+    // 体力がマイナスになったら警告
+    if (playerStatus_1_hp < 0) {
+      alert("わたしの体力がマイナスになっています！")
+    }
+    if (enemyStatus_1_hp < 0) {
+      alert("敵の体力がマイナスになっています！")
+    }
+
+    // プレイヤー側の攻撃メソッド
+    // const attack_jisou_2 = playerStatus_2["jisouryoku"] * playerStatus_2["level"];
+    // const attack_jisou_3 = playerStatus_3["jisouryoku"] * playerStatus_3["level"];
+    // const attack_p2p_2 = playerStatus_2["p2p"] * playerStatus_2["level"];
+    // const attack_p2p_3 = playerStatus_3["p2p"] * playerStatus_3["level"];
+
+    const attack_tutor_2 = playerStatus_2["tutor"] * playerStatus_2["level"];
+    const attack_tutor_3 = playerStatus_3["tutor"] * playerStatus_3["level"];
+    const attack_teacher = playerStatus_3["teacher"] * playerStatus_3["level"];
+
+    // 敵側の攻撃メソッド
+    const min = 1;
+    const max = 10;
+
+    const enemy_attack_2 = Math.floor(Math.random() * 9) + 1;
+    const enemy_attack_3 = Math.floor(Math.random() * (max - min + 1)) + min;
+
+    // 負けた回数をカウント
+    let losecount = 0;
+
+
+    // endGame定義
+    let endGame = enemyStatus_1_hp < 0 || playerStatus_1_hp < 0;
+    if (endGame) {
+      console.log("ゲーム終了");
+    } else {
+      console.log("ゲームを続ける")
+    };
+
+    // ゲームスタート時の処理
+    $(level1_start).on("click", function () {
+      $("#playerName").text("プログラマーのたまご");
+      $("#enemyName").text("ねむけ");
+      $("#jikkyou").text("攻撃ボタンのどれかを押したら戦闘開始");
+      $("#currentEnemyHp").val(enemyStatus_1_hp);
+      $("#currentPlayerHp").val(playerStatus_1_hp);
+      $("#currentPlayerMp").val("5");
+      $("#enemyImage").attr("src", "./images/nemui.png");
+      console.log("わたしのスタート時の体力は" + playerStatus_1_hp);
+      console.log("ねむけのスタート時の体力は" + enemyStatus_1_hp);
+    });
+
+    //バトル1 playerStatus1 vs enemyStatus1
+    // 自分と敵の体力が０より大きいときにバトルをする
+    // window.addEventListener("DOMContentLoaded",)function() {
+    //ゲーム終了条件 
+    if (losecount > 6) {
+      endGame = true;
+      $(lose).text(losecount);
+      console.log("大先生の教えにより敵に打ち勝った！");
+
+    } else if (enemyStatus_1_hp <= 0) {
+      endGame = true;
+      $("#currentEnemyHp").val(enemyStatus_1_hp);
+      console.log("勝利！");
+
+    } else if (playerStatus_1_hp <= 0) {
+      endGame = true;
+      $("#currentPlayerHp").val(playerStatus_1_hp);
+      console.log("敗北...");
+    } else {
+      endGame = false;
+      // 終了条件を満たさないとき繰り返し処理
+      // for (let i = 1; endGame = false; i++) {
+      console.log("私の体力" + playerStatus_1_hp, "敵の体力" + enemyStatus_1_hp);
+      // do{
+      // 攻撃（自走力）
+      $(jisouryoku).on("click", function () {
+        console.log("自走力を使った");
+        // プレイヤーの攻撃
+        const attack_jisou_1 = playerStatus_1["jisouryoku"] * playerStatus_1["level"] * losecount + 0.5;
+        console.log("わたしの攻撃力" + attack_jisou_1);
+        //  敵の攻撃
+        const min = 1;
+        const max = 10;
+        const enemy_attack_1 = Math.floor(Math.random() * 4) + 1;
+        console.log("ねむけの攻撃力" + enemy_attack_1);
+        // ダメージ計算
+        const enemyDamage = attack_jisou_1 - enemy_attack_1;
+        const playerDamage = enemy_attack_1 - attack_jisou_1;
+
+        // 判定
+        if (attack_jisou_1 > enemy_attack_1) {
+          enemyStatus_1_hp -= enemyDamage;
+          $("#jikkyou").text("わたしは" + "ねむけに" + enemyDamage + "ダメージを与えた");
+          console.log("わたしは" + "ねむけに" + enemyDamage + "ダメージを与えた");
+          $("#currentEnemyHp").val(enemyStatus_1_hp);
+          $("#currentPlayerHp").val(playerStatus_1_hp);
+          console.log("わたしの今の体力は" + playerStatus_1_hp);
+          console.log("ねむけの今の体力は" + enemyStatus_1_hp);
+
+
+        } else if (attack_jisou_1 === enemy_attack_1) {
+          $("#jikkyou").text("攻撃は当たらなかった");
+          console.log("攻撃は当たらなかった");
+
+        } else {
+          playerStatus_1_hp -= playerDamage;
+          $("#jikkyou").text("わたしは" + "ねむけから" + playerDamage + "ダメージを受けた");
+          console.log("わたしは" + "ねむけから" + playerDamage + "ダメージを受けた");
+          $("#currentEnemyHp").val(enemyStatus_1_hp);
+          $("#currentPlayerHp").val(playerStatus_1_hp);
+          console.log("わたしの今の体力は" + playerStatus_1_hp);
+          console.log("ねむけの今の体力は" + enemyStatus_1_hp);
+
+          losecount++;
+          $(lose).text(losecount);
+          console.log("負けた数は" + losecount);
+        }
+      });
+
+      // 攻撃（p2p）
+      $(p2p).on("click", function () {
+        console.log("P2Pを使った");
+        // プレイヤーの攻撃
+        const attack_p2p_1 = playerStatus_1["p2p"] * playerStatus_1["level"] * losecount + 0.5;
+        console.log("わたしの攻撃力" + attack_p2p_1);
+        //  敵の攻撃
+        const min = 1;
+        const max = 10;
+        const enemy_attack_1 = Math.floor(Math.random() * 4) + 1;
+        console.log("ねむけの攻撃力" + enemy_attack_1);
+        // ダメージ計算
+        const enemyDamage = attack_p2p_1 - enemy_attack_1;
+        const playerDamage = enemy_attack_1 - attack_p2p_1;
+
+        // 判定
+        if (attack_p2p_1 > enemy_attack_1) {
+          enemyStatus_1_hp -= enemyDamage;
+          $("#jikkyou").text("わたしは" + "ねむけに" + enemyDamage + "ダメージを与えた");
+          console.log("わたしは" + "ねむけに" + enemyDamage + "ダメージを与えた");
+          $("#currentEnemyHp").val(enemyStatus_1_hp);
+          $("#currentPlayerHp").val(playerStatus_1_hp);
+          console.log("わたしの今の体力は" + playerStatus_1_hp);
+          console.log("ねむけの今の体力は" + enemyStatus_1_hp);
+
+
+        } else if (attack_p2p_1 === enemy_attack_1) {
+          $("#jikkyou").text("攻撃は当たらなかった");
+          console.log("攻撃は当たらなかった");
+
+        } else {
+          playerStatus_1_hp -= playerDamage;
+          $("#jikkyou").text("わたしは" + "ねむけから" + playerDamage + "ダメージを受けた");
+          console.log("わたしは" + "ねむけから" + playerDamage + "ダメージを受けた");
+          $("#currentEnemyHp").val(enemyStatus_1_hp);
+          $("#currentPlayerHp").val(playerStatus_1_hp);
+          console.log("わたしの今の体力は" + playerStatus_1_hp);
+          console.log("ねむけの今の体力は" + enemyStatus_1_hp);
+
+          losecount++;
+          $(lose).text(losecount);
+          console.log("負けた数は" + losecount);
+        }
+      });
+
+      // 回復（デジタルデトックス）
+      $(detox).on("click", function () {
+        const recovery_detox_1 = playerStatus_1["detox"] * playerStatus_1["level"];
+        console.log("わたしの回復力" + recovery_detox_1);
+        // HPを増やす処理
+        playerStatus_1_hp += recovery_detox_1;
+        $("#jikkyou").text("わたしの体力が" + recovery_detox_1 + "回復した");
+        console.log("わたしの体力が" + recovery_detox_1 + "回復した");
+        $("#currentPlayerHp").val(playerStatus_1_hp);
+        console.log("わたしの今の体力は" + playerStatus_1_hp);
+      });
+
+      // for文の終わり
+      // };
+
+
+      // } while (enemyStatus_1_hp <= 0 || playerStatus_1_hp <= 0);
+
+      // 勝敗
+      // ゲーム終了の条件
+      // const endGame = enemyStatus_1["hp"] <= 0 || playerStatus_1["hp"] <= 0;
+      // if (endGame === true) {
+      //   alert("ゲーム終了");
+      // };
+
+      // ゲーム終了条件if文の終わり
+    }
+    // };
+  </script>
+
+</body>
+
+</html>
